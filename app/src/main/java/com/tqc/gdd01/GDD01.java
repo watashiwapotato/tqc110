@@ -10,11 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
-public class GDD01 extends Activity
-{
+public class GDD01 extends Activity {
     public static boolean bIfDebug = false;
     public static String TAG = "HIPPO_DEBUG";
 
@@ -23,20 +25,18 @@ public class GDD01 extends Activity
     protected RecyclerView mRecyclerView;
     protected HippoCustomRecyclerViewAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected ArrayList<Movie> mDataset = new ArrayList<>();
+    protected ArrayList<Movie> mDataset = new ArrayList<Movie>();
     protected LayoutManagerType mCurrentLayoutManagerType;
     private View mCoordinatorLayout;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
-    private enum LayoutManagerType
-    {
+    private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -47,8 +47,7 @@ public class GDD01 extends Activity
         initRecycleView(savedInstanceState);
     }
 
-    private void init()
-    {
+    private void init() {
         mCoordinatorLayout = findViewById(R.id.main_CoordinatorLayout);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         mCollapsingToolbarLayout.setTitle(getTitle());
@@ -56,51 +55,48 @@ public class GDD01 extends Activity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
-        {
+        if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void initDataset()
-    {
+    private void initDataset() {
         mDataset = new ArrayList<Movie>();
-        for (int i = 0; i < DATASET_COUNT; i++)
-        {
+        for (int i = 0; i < DATASET_COUNT; i++) {
             Movie movie = new Movie();
             movie.setName("電影編號 #" + i);
             //  修正 RecyclerView 裡的電影租片清單為單數項目為milkyway.jpg，奇數項目為peacock.jpg
             // TO DO
-            movie.setThumbnail(R.drawable.milkyway);
+            if (i % 2 == 0) {
+                movie.setThumbnail(R.drawable.peacock);
+            } else {
+                movie.setThumbnail(R.drawable.milkyway);
+            }
             mDataset.add(movie);
         }
     }
 
-    private void initRecycleView(Bundle savedInstanceState)
-    {
+    private void initRecycleView(Bundle savedInstanceState) {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(GDD01.this);
         mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             // Restore saved layout manager type.
             mCurrentLayoutManagerType = (LayoutManagerType) savedInstanceState.getSerializable(Constants.EXTRA_KEY_LAYOUT_MANAGER);
         }
@@ -111,23 +107,19 @@ public class GDD01 extends Activity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
+    protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(Constants.EXTRA_KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
         super.onSaveInstanceState(outState);
     }
 
-    public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType)
-    {
+    public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType) {
         int scrollPosition = 0;
         // If a layout manager has already been set, get current scroll position.
-        if (mRecyclerView.getLayoutManager() != null)
-        {
+        if (mRecyclerView.getLayoutManager() != null) {
             scrollPosition = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
         }
 
-        switch (layoutManagerType)
-        {
+        switch (layoutManagerType) {
             case GRID_LAYOUT_MANAGER:
                 mLayoutManager = new GridLayoutManager(GDD01.this, SPAN_COUNT);
                 mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
@@ -144,16 +136,30 @@ public class GDD01 extends Activity
         mRecyclerView.scrollToPosition(scrollPosition);
     }
 
-    private void initBanner()
-    {
+    private void initBanner() {
         //  當使用者點到廣告圖片，以 Snackbar 在應用程式最下方顯示短暫訊息：「你點擊了上方廣告Banner」
         // TO DO
+        ImageView imageView = (ImageView) findViewById(R.id.header);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(mRecyclerView, "你點擊了上方廣告Banner", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
-    private void initFloatingActionButton()
-    {
+    private void initFloatingActionButton() {
         //  當按下FloatingActionButton時，以 Snackbar 在應用程式最下方顯示短暫訊息：「你點擊了浮動的+按鈕」
         // TO DO
+        ImageButton imageButton = (ImageButton) findViewById(R.id.imagebutton);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(mRecyclerView, "你點擊了浮動的+按鈕", Snackbar.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
 }
